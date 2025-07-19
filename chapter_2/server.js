@@ -8,8 +8,12 @@ const app = express()
 const PORT = 8383
 
 let data = {
-  name: "James"
+  name: "James",
+  names: ["John", "Peter"]
 }
+
+//Middle
+app.use(express.json())
 
 // HTTP VERB && Routes (or paths
 // The method informs the nature of the request and the route is a further
@@ -21,17 +25,26 @@ let data = {
 // Type 1 - Website endpoints (these endpoints are for sending back html and they typically
 // come when a user enters a url in a browser)
 app.get("/", (req, res) => {
+  console.log("User requested the home page website");
+
   res.send(`
     <body
      style="background:pink; color: blue"
     >
     <h1>DATA:</h1>
       <p>${JSON.stringify(data)}</p>
+      <a href="/dashboard">Dashboard</a>
     </body>
+    <script>console.log("This is my script")</script>
  `)
 })
 app.get("/dashboard", (req, res) => {
-    res.send("<h1>dashboard</h1><input />")
+    res.send(`
+      <body>
+        <h1>dashboard</h1>
+        <a href="/">home</a>  
+      </body>
+    `)
 })
 
 
@@ -42,9 +55,21 @@ app.get("/dashboard", (req, res) => {
 
 app.get("/api/data", (req, res) => {
   console.log("This one was for data");
-  res.send(data)
+  res.status(200).send(data)
+})
+app.post("/api/data", (req, res) => { 
+  const newEntry = req.body
+  console.log(newEntry);
+  data.names.push(newEntry.name)
+  res.status(201).json(newEntry)
 })
 
+app.delete("/api/data", (req, res) => {
+   data.names.pop()
+   console.log("We deleted the element of the end of the array");
+   res.sendStatus(203)
+   
+})
 
 
 
